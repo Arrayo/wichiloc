@@ -39,7 +39,7 @@ function App() {
       iconAnchor: [10, 10],
     });
 
-    watchPosition(([lat, lng]) => {
+    const updatePosition = (lat, lng) => {
       if (!markerRef.current) {
         markerRef.current = L.marker([lat, lng], { icon: userIcon }).addTo(mapRef.current);
         mapRef.current.setView([lat, lng], 16);
@@ -51,6 +51,17 @@ function App() {
         const status = routeTrackerRef.current([lat, lng]);
         setRouteStatus(status);
       }
+    };
+
+    // Modo simulación: click en el mapa para simular posición
+    mapRef.current.on('click', (e) => {
+      console.log('Simulated position:', e.latlng);
+      updatePosition(e.latlng.lat, e.latlng.lng);
+    });
+
+    // GPS real
+    watchPosition(([lat, lng]) => {
+      updatePosition(lat, lng);
     });
   }, []);
 
