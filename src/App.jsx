@@ -53,11 +53,12 @@ function App() {
       }
     };
 
-    // Modo simulación: click en el mapa para simular posición
-    mapRef.current.on('click', (e) => {
-      console.log('Simulated position:', e.latlng);
-      updatePosition(e.latlng.lat, e.latlng.lng);
-    });
+    // Modo simulación: click en el mapa para simular posición (solo en desarrollo)
+    if (import.meta.env.DEV) {
+      mapRef.current.on('click', (e) => {
+        updatePosition(e.latlng.lat, e.latlng.lng);
+      });
+    }
 
     // GPS real
     watchPosition(([lat, lng]) => {
@@ -66,15 +67,19 @@ function App() {
   }, []);
 
   const loadRouteOnMap = (coordinates, gpxContent) => {
+    if (!coordinates || coordinates.length === 0) {
+      alert('Error: La ruta no tiene coordenadas válidas. Carga el archivo GPX de nuevo.');
+      return;
+    }
+
     if (gpxLayerRef.current) {
       mapRef.current.removeLayer(gpxLayerRef.current);
     }
 
-    gpxLayerRef.current = new L.GPX(gpxContent, { async: true });
-    gpxLayerRef.current.on('loaded', (event) => {
-      mapRef.current.fitBounds(event.target.getBounds());
-    });
-    gpxLayerRef.current.addTo(mapRef.current);
+    // Dibujar la ruta
+    const latlngs = coordinates.map(([lon, lat]) => [lat, lon]);
+    gpxLayerRef.current = L.polyline(latlngs, { color: 'blue', weight: 3 }).addTo(mapRef.current);
+    mapRef.current.fitBounds(gpxLayerRef.current.getBounds());
 
     routeTrackerRef.current = createRouteTracker(
       coordinates,
