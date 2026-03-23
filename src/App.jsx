@@ -9,6 +9,14 @@ import { FloatingControls } from './components/FloatingControls';
 import { RouteList } from './components/RouteList';
 import { ElevationProfile } from './components/ElevationProfile';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 function App() {
   const mapRef = useRef(null);
@@ -24,9 +32,17 @@ function App() {
   useEffect(() => {
     mapRef.current = createMap('map');
 
+    const userIcon = L.divIcon({
+      className: 'user-location-marker',
+      html: '<div style="background: #3b82f6; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+    });
+
     watchPosition(([lat, lng]) => {
       if (!markerRef.current) {
-        markerRef.current = L.marker([lat, lng]).addTo(mapRef.current);
+        markerRef.current = L.marker([lat, lng], { icon: userIcon }).addTo(mapRef.current);
+        mapRef.current.setView([lat, lng], 16);
       } else {
         markerRef.current.setLatLng([lat, lng]);
       }
