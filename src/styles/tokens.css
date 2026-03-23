@@ -1,0 +1,41 @@
+* {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  /* Brand */
+  --color-primary: #f97316;
+  --color-primary-dark: #ea580c;
+  --color-primary-light: #fff7ed;
+  --color-primary-muted: rgba(249, 115, 22, 0.15);
+
+  /* Neutrals */
+  --color-black: #0f0f0f;
+  --color-surface: #1c1c1e;
+  --color-surface-2: #2c2c2e;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-white: #ffffff;
+  --color-text: #f5f5f5;
+  --color-text-muted: rgba(255, 255, 255, 0.55);
+
+  /* Semantic */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-danger-dark: #dc2626;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.55);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease-out;
+  --transition-base: 0.2s ease-out;
+}

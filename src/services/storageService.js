@@ -81,3 +81,25 @@ export const deleteRoute = async (id) => {
     request.onerror = () => reject(request.error);
   });
 };
+
+export const updateRouteName = async (id, newName) => {
+  const database = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const getRequest = store.get(id);
+
+    getRequest.onsuccess = () => {
+      const route = getRequest.result;
+      if (route) {
+        route.name = newName;
+        const updateRequest = store.put(route);
+        updateRequest.onsuccess = () => resolve();
+        updateRequest.onerror = () => reject(updateRequest.error);
+      } else {
+        reject(new Error('Route not found'));
+      }
+    };
+    getRequest.onerror = () => reject(getRequest.error);
+  });
+};

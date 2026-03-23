@@ -1,15 +1,10 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useCallback } from 'preact/hooks';
 import './ElevationProfile.css';
 
 export const ElevationProfile = ({ elevationData, stats, onClose }) => {
   const canvasRef = useRef(null);
 
-  useEffect(() => {
-    if (!elevationData || elevationData.length === 0) return;
-    drawProfile();
-  }, [elevationData]);
-
-  const drawProfile = () => {
+  const drawProfile = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -23,12 +18,17 @@ export const ElevationProfile = ({ elevationData, stats, onClose }) => {
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
+    if (elevationData.length < 2) return;
+
     const maxElevation = Math.max(...elevationData.map(d => d.elevation));
     const minElevation = Math.min(...elevationData.map(d => d.elevation));
     const maxDistance = elevationData[elevationData.length - 1].distance;
 
+    if (maxDistance === 0) return;
+
+    const elevationRange = maxElevation - minElevation;
     const scaleX = chartWidth / maxDistance;
-    const scaleY = chartHeight / (maxElevation - minElevation);
+    const scaleY = elevationRange > 0 ? chartHeight / elevationRange : 1;
 
     ctx.fillStyle = '#f3f4f6';
     ctx.fillRect(padding.left, padding.top, chartWidth, chartHeight);
@@ -79,7 +79,12 @@ export const ElevationProfile = ({ elevationData, stats, onClose }) => {
       const distance = ((maxDistance / 1000) / 4) * i;
       ctx.fillText(`${distance.toFixed(1)}km`, x, height - 10);
     }
-  };
+  }, [elevationData]);
+
+  useEffect(() => {
+    if (!elevationData || elevationData.length === 0) return;
+    drawProfile();
+  }, [elevationData, drawProfile]);
 
   return (
     <div className="elevation-overlay" onClick={onClose}>

@@ -1,29 +1,39 @@
-import L from 'leaflet';
+const haversineDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371e3;
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(Δφ / 2) ** 2 +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
 
-export const loadGPX = (map, file, onLoaded) => {
-  const reader = new FileReader();
+export const parseGPX = (gpxContent) => {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(gpxContent, 'text/xml');
+  const trkpts = xmlDoc.querySelectorAll('trkpt');
 
-  reader.onload = (e) => {
-    const gpxContent = e.target.result;
-    
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(gpxContent, 'text/xml');
-    
-    const trkpts = xmlDoc.querySelectorAll('trkpt');
-    
-    const coordinates = [];
-    trkpts.forEach(point => {
-      const lat = parseFloat(point.getAttribute('lat'));
-      const lon = parseFloat(point.getAttribute('lon'));
-      coordinates.push([lon, lat]);
-    });
-    
-    const latlngs = coordinates.map(([lon, lat]) => [lat, lon]);
-    const polyline = L.polyline(latlngs, { color: 'blue', weight: 3 }).addTo(map);
-    map.fitBounds(polyline.getBounds());
-    
-    if (onLoaded) onLoaded(coordinates);
-  };
+  const coordinates = [];
+  const elevationData = [];
+  let cumulativeDistance = 0;
 
-  reader.readAsText(file);
+  trkpts.forEach((point, index) => {
+    const lat = parseFloat(point.getAttribute('lat'));
+    const lon = parseFloat(point.getAttribute('lon'));
+    const eleNode = point.querySelector('ele');
+    const elevation = eleNode ? parseFloat(eleNode.textContent) : 0;
+
+    coordinates.push([lon, lat]);
+
+    if (index > 0) {
+      const prev = elevationData[index - 1];
+      cumulativeDistance += haversineDistance(prev.lat, prev.lon, lat, lon);
+    }
+
+    elevationData.push({ lat, lon, elevation, distance: cumulativeDistance });
+  });
+
+  return { coordinates, elevationData };
 };

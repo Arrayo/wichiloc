@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# GPX files (rutas de prueba personales)
+*.gpx
+public/*.gpx
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

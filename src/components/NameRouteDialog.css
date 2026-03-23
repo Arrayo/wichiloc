@@ -1,0 +1,82 @@
+.name-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.name-dialog {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  max-width: 22rem;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  animation: scaleIn var(--transition-base);
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.name-dialog h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 1.25rem;
+}
+
+.name-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.9375rem;
+  background: var(--color-black);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  outline: none;
+  margin-bottom: 1.25rem;
+  transition: border-color var(--transition-fast);
+}
+
+.name-input:focus { border-color: var(--color-primary); }
+
+.name-dialog-actions { display: flex; gap: 0.75rem; }
+
+.btn-cancel, .btn-save {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-cancel {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.btn-cancel:active { background: var(--color-border); }
+
+.btn-save {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn-save:active { background: var(--color-primary-dark); }
