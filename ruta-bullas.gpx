@@ -2,87 +2,87 @@
 <gpx version="1.1" creator="GPX Tracker" xmlns="http://www.topografix.com/GPX/1/1">
   <metadata>
     <name>Ruta de Prueba - Bullas</name>
-    <desc>Ruta corta circular desde C/ Cristóbal Colón 19, Bullas</desc>
+    <desc>Ruta corta circular desde tu ubicación en Bullas</desc>
   </metadata>
   <trk>
     <name>Paseo por Bullas</name>
     <trkseg>
-      <trkpt lat="38.0465" lon="-1.6685">
+      <trkpt lat="38.0473763" lon="-1.6679384">
         <ele>650</ele>
       </trkpt>
-      <trkpt lat="38.0468" lon="-1.6688">
+      <trkpt lat="38.0475" lon="-1.6682">
         <ele>651</ele>
       </trkpt>
-      <trkpt lat="38.0472" lon="-1.6690">
+      <trkpt lat="38.0477" lon="-1.6685">
         <ele>652</ele>
       </trkpt>
-      <trkpt lat="38.0476" lon="-1.6692">
+      <trkpt lat="38.0480" lon="-1.6688">
         <ele>653</ele>
       </trkpt>
-      <trkpt lat="38.0480" lon="-1.6693">
+      <trkpt lat="38.0483" lon="-1.6690">
         <ele>654</ele>
       </trkpt>
-      <trkpt lat="38.0484" lon="-1.6692">
+      <trkpt lat="38.0486" lon="-1.6692">
         <ele>655</ele>
       </trkpt>
-      <trkpt lat="38.0488" lon="-1.6690">
+      <trkpt lat="38.0489" lon="-1.6693">
         <ele>656</ele>
       </trkpt>
-      <trkpt lat="38.0492" lon="-1.6687">
+      <trkpt lat="38.0492" lon="-1.6692">
         <ele>657</ele>
       </trkpt>
-      <trkpt lat="38.0495" lon="-1.6683">
+      <trkpt lat="38.0495" lon="-1.6690">
         <ele>658</ele>
       </trkpt>
-      <trkpt lat="38.0497" lon="-1.6678">
+      <trkpt lat="38.0497" lon="-1.6687">
         <ele>659</ele>
       </trkpt>
-      <trkpt lat="38.0498" lon="-1.6673">
+      <trkpt lat="38.0499" lon="-1.6683">
+        <ele>660</ele>
+      </trkpt>
+      <trkpt lat="38.0500" lon="-1.6678">
+        <ele>661</ele>
+      </trkpt>
+      <trkpt lat="38.0499" lon="-1.6673">
         <ele>660</ele>
       </trkpt>
       <trkpt lat="38.0497" lon="-1.6668">
         <ele>659</ele>
       </trkpt>
-      <trkpt lat="38.0495" lon="-1.6663">
+      <trkpt lat="38.0495" lon="-1.6664">
         <ele>658</ele>
       </trkpt>
-      <trkpt lat="38.0492" lon="-1.6659">
+      <trkpt lat="38.0492" lon="-1.6661">
         <ele>657</ele>
       </trkpt>
-      <trkpt lat="38.0488" lon="-1.6656">
+      <trkpt lat="38.0489" lon="-1.6659">
         <ele>656</ele>
       </trkpt>
-      <trkpt lat="38.0484" lon="-1.6654">
+      <trkpt lat="38.0486" lon="-1.6658">
         <ele>655</ele>
       </trkpt>
-      <trkpt lat="38.0480" lon="-1.6653">
+      <trkpt lat="38.0483" lon="-1.6658">
         <ele>654</ele>
       </trkpt>
-      <trkpt lat="38.0476" lon="-1.6654">
+      <trkpt lat="38.0480" lon="-1.6660">
         <ele>653</ele>
       </trkpt>
-      <trkpt lat="38.0472" lon="-1.6656">
+      <trkpt lat="38.0477" lon="-1.6663">
         <ele>652</ele>
       </trkpt>
-      <trkpt lat="38.0468" lon="-1.6659">
+      <trkpt lat="38.0475" lon="-1.6666">
         <ele>651</ele>
       </trkpt>
-      <trkpt lat="38.0465" lon="-1.6663">
+      <trkpt lat="38.0473763" lon="-1.6670">
         <ele>650</ele>
       </trkpt>
-      <trkpt lat="38.0463" lon="-1.6668">
+      <trkpt lat="38.0472" lon="-1.6674">
         <ele>649</ele>
       </trkpt>
-      <trkpt lat="38.0462" lon="-1.6673">
-        <ele>648</ele>
-      </trkpt>
-      <trkpt lat="38.0463" lon="-1.6678">
+      <trkpt lat="38.0472" lon="-1.6677">
         <ele>649</ele>
       </trkpt>
-      <trkpt lat="38.0465" lon="-1.6682">
-        <ele>650</ele>
-      </trkpt>
-      <trkpt lat="38.0465" lon="-1.6685">
+      <trkpt lat="38.0473763" lon="-1.6679384">
         <ele>650</ele>
       </trkpt>
     </trkseg>
