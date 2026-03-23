@@ -1,8 +1,8 @@
 import { distanceToRoute } from '../utils/distance';
 import { createRoute } from '../domain/route';
 
-const ALERT_THRESHOLD = 500;
-const WARNING_THRESHOLD = 250;
+const ALERT_THRESHOLD = 50;
+const WARNING_THRESHOLD = 25;
 
 export const createRouteTracker = (coordinates, onStatusChange) => {
   const route = createRoute(coordinates);
