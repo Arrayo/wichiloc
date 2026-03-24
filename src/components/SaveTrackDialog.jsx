@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { formatDistance, formatDuration } from '../utils/format';
 import './SaveTrackDialog.css';
 
 export const SaveTrackDialog = ({ trackData, onSave, onDiscard }) => {
@@ -10,29 +11,10 @@ export const SaveTrackDialog = ({ trackData, onSave, onDiscard }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSave();
-    }
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSave();
   };
 
-  const formatDistance = (meters) => {
-    if (meters >= 1000) {
-      return `${(meters / 1000).toFixed(2)} km`;
-    }
-    return `${Math.round(meters)} m`;
-  };
-
-  const formatDuration = (ms) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
 
   return (
     <div className="save-track-overlay" onClick={onDiscard}>
@@ -62,7 +44,7 @@ export const SaveTrackDialog = ({ trackData, onSave, onDiscard }) => {
             className="track-name-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onKeyUp={handleKeyPress}
+            onKeyDown={handleKeyDown}
             placeholder="Nombre del recorrido"
             autoFocus
           />

@@ -7,6 +7,12 @@ import { saveRoute } from './services/storageService';
 import { getElevationStats } from './services/elevationService';
 import { playOnRouteSound, playWarningSound, playOffRouteSound, playRouteCompleteSound, initAudio } from './services/audioService';
 import { calculateBearing, findNearestPointOnRoute } from './utils/bearing';
+import { haversineDistance } from './utils/distance';
+import { precacheRouteTiles } from './utils/tilePrecache';
+import { extractTurnWaypoints } from './utils/turnByTurn';
+import { useTurnByTurn } from './hooks/useTurnByTurn';
+import { TurnIndicator } from './components/TurnIndicator';
+import { RouteStatusBanner } from './components/RouteStatusBanner';
 import { FloatingControls } from './components/FloatingControls';
 import { RouteList } from './components/RouteList';
 import { ElevationProfile } from './components/ElevationProfile';
@@ -40,7 +46,6 @@ function App() {
   const traveledLineRef = useRef(null);
   const routeCoordinatesRef = useRef(null);
   const positionHistoryRef = useRef([]);
-  const reverseDetectionRef = useRef({ detected: false });
   const routeCompleteRef = useRef(false);
   const [routeStatus, setRouteStatus] = useState(null);
   const [currentStatus, setCurrentStatus] = useState('on-route');
@@ -52,6 +57,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Cargando...');
   const [viewingStart, setViewingStart] = useState(false);
+  const [hasRoute, setHasRoute] = useState(false);
   const [elevationData, setElevationData] = useState(null);
   const [elevationStats, setElevationStats] = useState(null);
   const [currentGpxContent, setCurrentGpxContent] = useState(null);
@@ -77,11 +83,14 @@ function App() {
 
   useWakeLock(!!trackingStartTime);
 
+  const { setWaypoints, updatePosition: updateTurnPosition, nextTurn, reset: resetTurns } = useTurnByTurn();
+
   useEffect(() => { currentStatusRef.current = currentStatus; }, [currentStatus]);
   const lastPositionRef = useRef(null);
   const lastAltitudeRef = useRef(null);
   const currentStatusRef = useRef('on-route');
   const nearestIndexRef = useRef(0);
+  const maxIndexVisitedRef = useRef(0);
   const cachedIconColorRef = useRef(null);
   const cachedIconRef = useRef(null);
   const lastSetViewRef = useRef(0);
@@ -111,6 +120,7 @@ function App() {
       setCurrentPosition([lat, lng]);
       
       addTrackPoint(lat, lng, altitude);
+      if (routeCoordinatesRef.current) updateTurnPosition(lat, lng);
       
       let status = 'on-route';
       let nearestIndex = nearestIndexRef.current;
@@ -134,7 +144,8 @@ function App() {
         setRouteStatus(statusResult);
         status = statusResult.status;
         setCurrentStatus(status);
-        
+        currentStatusRef.current = status;
+
         if (status !== previousStatus) {
           if (status === 'on-route') {
             playOnRouteSound();
@@ -150,6 +161,10 @@ function App() {
         
         if ((status === 'on-route' || status === 'warning') && routeCoordinatesRef.current) {
           
+          if (nearestIndex > maxIndexVisitedRef.current) {
+            maxIndexVisitedRef.current = nearestIndex;
+          }
+
           positionHistoryRef.current.push({ lat, lng, index: nearestIndex });
           if (positionHistoryRef.current.length > 4) {
             positionHistoryRef.current.shift();
@@ -173,7 +188,7 @@ function App() {
 
             if (reverseCount >= 3 && startedNearEnd && meaningfulBackwardProgress) {
               autoReverseAppliedRef.current = true;
-              reverseDetectionRef.current.detected = true;
+
               const reversedCoords = [...routeCoordinatesRef.current].reverse();
               const reversedElevationData = reverseElevationData(elevationDataRef.current);
               loadRouteOnMap(reversedCoords, currentGpxContentRef.current, true, reversedElevationData);
@@ -189,11 +204,16 @@ function App() {
               Math.pow(lng - lonEnd, 2)
             );
             
-            const maxIndexVisited = Math.max(...positionHistoryRef.current.map(p => p.index));
-            const routeCoverage = maxIndexVisited;
-            
-            const isNearFinish = nearestIndex >= lastIndex - 2 || nearestIndex <= 1;
+            const routeCoverage = maxIndexVisitedRef.current;
             const hasCompletedRoute = routeCoverage > lastIndex * 0.6;
+
+            const [lonStart, latStart] = routeCoordinatesRef.current[0];
+            const isCircular = Math.sqrt(
+              Math.pow(latEnd - latStart, 2) + Math.pow(lonEnd - lonStart, 2)
+            ) < 0.0001;
+
+            const isNearFinish = nearestIndex >= lastIndex - 2 ||
+              (isCircular && nearestIndex <= 1 && hasCompletedRoute);
             
             if (distanceToEnd < 0.0003 && isNearFinish && hasCompletedRoute) {
               routeCompleteRef.current = true;
@@ -275,25 +295,10 @@ function App() {
         
         if (lastPositionRef.current && (routeCoordinatesRef.current || isRecordingRef.current)) {
           const [lastLat, lastLng] = lastPositionRef.current;
-          const distance = calculateDistance(lastLat, lastLng, lat, lng);
+          const distance = haversineDistance(lastLat, lastLng, lat, lng);
           setTotalDistance(prev => prev + distance);
           lastPositionRef.current = [lat, lng];
         }
-      }
-
-      function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371e3; 
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                  Math.cos(φ1) * Math.cos(φ2) *
-                  Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
       }
     };
 
@@ -352,14 +357,19 @@ function App() {
     }
 
     routeCoordinatesRef.current = coordinates;
+    setHasRoute(true);
     
     if (!reversed) {
       setCurrentGpxContent(gpxContent);
       autoReverseAppliedRef.current = false;
+      precacheRouteTiles(coordinates);
+      setWaypoints(extractTurnWaypoints(coordinates));
+    } else {
+      resetTurns();
     }
     
-    reverseDetectionRef.current = { detected: false };
     positionHistoryRef.current = [];
+    maxIndexVisitedRef.current = 0;
     routeCompleteRef.current = false;
     nearestIndexRef.current = 0;
     cachedIconColorRef.current = null;
@@ -403,9 +413,6 @@ function App() {
       lineJoin: 'round',
     }).addTo(mapRef.current);
 
-    if (traveledLineRef.current) {
-      mapRef.current.removeLayer(traveledLineRef.current);
-    }
     traveledLineRef.current = L.polyline([], {
       color: 'rgba(120,120,120,0.85)',
       weight: 5,
@@ -569,20 +576,22 @@ function App() {
   const handleSelectRoute = (route) => {
     setIsLoading(true);
     setLoadingMessage('Cargando ruta...');
-    
-    setTimeout(() => {
-      const { elevationData } = route.gpxContent
-        ? parseGPX(route.gpxContent)
-        : { elevationData: null };
 
-      if (!elevationData) {
-        setElevationData(null);
-        setElevationStats(null);
-      }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const { elevationData } = route.gpxContent
+          ? parseGPX(route.gpxContent)
+          : { elevationData: null };
 
-      loadRouteOnMap(route.coordinates, route.gpxContent, false, elevationData);
-      setIsLoading(false);
-    }, 300);
+        if (!elevationData) {
+          setElevationData(null);
+          setElevationStats(null);
+        }
+
+        loadRouteOnMap(route.coordinates, route.gpxContent, false, elevationData);
+        setIsLoading(false);
+      });
+    });
   };
 
   const handleCenterMap = () => {
@@ -648,6 +657,13 @@ function App() {
           routeStatus={routeStatus}
         />
       )}
+      {hasRoute && (
+        <div className="top-nav-stack">
+          <TurnIndicator nextTurn={nextTurn} />
+          <RouteStatusBanner routeStatus={routeStatus} />
+        </div>
+      )}
+
       <FloatingControls 
         onFileSelect={handleFile}
         onCenterMap={handleCenterMap}
@@ -657,10 +673,9 @@ function App() {
         onToggleStartView={handleToggleStartView}
         onImportUrl={() => setShowImportUrlDialog(true)}
         onToggleRecording={handleToggleRecording}
-        hasRoute={!!elevationData}
+        hasRoute={hasRoute}
         viewingStart={viewingStart}
         isRecording={isRecording}
-        routeStatus={routeStatus}
       />
       {showRouteList && (
         <RouteList 

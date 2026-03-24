@@ -1,8 +1,12 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import './NameRouteDialog.css';
 
 export const NameRouteDialog = ({ defaultName, onSave, onCancel }) => {
   const [name, setName] = useState(defaultName);
+
+  useEffect(() => {
+    setName(defaultName);
+  }, [defaultName]);
 
   const handleSave = () => {
     if (name.trim()) {
@@ -10,10 +14,9 @@ export const NameRouteDialog = ({ defaultName, onSave, onCancel }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSave();
-    }
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSave();
+    if (e.key === 'Escape') onCancel();
   };
 
   return (
@@ -25,7 +28,7 @@ export const NameRouteDialog = ({ defaultName, onSave, onCancel }) => {
           className="name-input"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onKeyUp={handleKeyPress}
+          onKeyDown={handleKeyDown}
           placeholder="Nombre de la ruta"
           autoFocus
         />

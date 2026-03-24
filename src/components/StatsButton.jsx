@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/hooks';
 import { BarChart2, Timer, Ruler, Zap, Mountain, TrendingUp, X, CheckCircle, AlertTriangle, XCircle } from 'lucide-preact';
+import { formatTime, formatDistance } from '../utils/format';
 import './StatsButton.css';
 
 export const StatsButton = ({ distance, startTime, altitude, elevationGain, routeStatus }) => {
@@ -14,19 +15,6 @@ export const StatsButton = ({ distance, startTime, altitude, elevationGain, rout
     return () => clearInterval(interval);
   }, [startTime]);
 
-  const formatTime = (ms) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    if (hours > 0) return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    return `${minutes}:${String(seconds).padStart(2, '0')}`;
-  };
-
-  const formatDistance = (meters) => {
-    if (meters >= 1000) return `${(meters / 1000).toFixed(2)} km`;
-    return `${Math.round(meters)} m`;
-  };
 
   const calculateSpeed = () => {
     if (!elapsedTime || !distance) return '0.0';
@@ -42,8 +30,9 @@ export const StatsButton = ({ distance, startTime, altitude, elevationGain, rout
     'on-route': { color: 'var(--color-success)', Icon: CheckCircle, text: 'En ruta' },
     'warning': { color: 'var(--color-warning)', Icon: AlertTriangle, text: 'Alejándote' },
     'off-route': { color: 'var(--color-danger)', Icon: XCircle, text: 'Fuera de ruta' },
+    'error': { color: 'var(--color-text-muted)', Icon: AlertTriangle, text: 'Sin señal GPS' },
   };
-  const status = routeStatus ? statusConfig[routeStatus.status] : null;
+  const status = routeStatus ? (statusConfig[routeStatus.status] ?? null) : null;
 
   return (
     <>

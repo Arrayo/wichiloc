@@ -1,5 +1,6 @@
 import { useState, useRef } from 'preact/hooks';
 import { saveRoute } from '../services/storageService';
+import { downloadGPX } from '../utils/download';
 
 const generateGPX = (trackPoints, trackName) => {
   const gpxHeader = `<?xml version="1.0" encoding="UTF-8"?>
@@ -27,17 +28,6 @@ const generateGPX = (trackPoints, trackName) => {
   return gpxHeader + '\n' + gpxPoints + gpxFooter;
 };
 
-const downloadGPX = (gpxContent, fileName) => {
-  const blob = new Blob([gpxContent], { type: 'application/gpx+xml' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${fileName}.gpx`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
 
 export const useTrackRecording = () => {
   const [isRecording, setIsRecording] = useState(false);

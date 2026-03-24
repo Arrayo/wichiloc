@@ -129,8 +129,8 @@
 }
 
 .action-btn {
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border: none;
   border-radius: var(--radius-sm);
   background: var(--color-surface-2);

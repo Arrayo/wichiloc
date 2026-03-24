@@ -20,8 +20,6 @@ export const Compass = () => {
     };
 
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS 13+: el permiso debe pedirse desde una interacción de usuario.
-      // Lo pedimos en el primer tap sobre el documento para no bloquear el render.
       const requestOnInteraction = () => {
         DeviceOrientationEvent.requestPermission()
           .then(state => { if (state === 'granted') register(); })

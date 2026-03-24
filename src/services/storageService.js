@@ -58,18 +58,6 @@ export const getAllRoutes = async () => {
   });
 };
 
-export const getRoute = async (id) => {
-  const database = await initDB();
-  return new Promise((resolve, reject) => {
-    const transaction = database.transaction([STORE_NAME], 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.get(id);
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-};
-
 export const deleteRoute = async (id) => {
   const database = await initDB();
   return new Promise((resolve, reject) => {

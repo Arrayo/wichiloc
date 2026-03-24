@@ -42,7 +42,7 @@ export const FloatingControls = ({
           aria-label={isRecording ? 'Detener grabación' : 'Iniciar grabación'}
           title={isRecording ? 'Detener grabación' : 'Grabar recorrido'}
         >
-          {isRecording ? <Square size={18} fill="currentColor" /> : <Circle size={18} />}
+          {isRecording ? <Square size={20} fill="currentColor" /> : <Circle size={20} />}
           <span className="ctrl-label">{isRecording ? 'Detener' : 'Grabar'}</span>
         </button>
 

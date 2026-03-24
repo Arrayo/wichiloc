@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { getAllRoutes, deleteRoute, updateRouteName } from '../services/storageService';
+import { downloadGPX } from '../utils/download';
 import { X, Pencil, Trash2, Share2, Check, AlertTriangle, Route } from 'lucide-preact';
 import './RouteList.css';
 
@@ -59,11 +60,9 @@ export const RouteList = ({ onSelectRoute, onClose }) => {
     e.stopPropagation();
     
     try {
-      // Crear archivo GPX
       const blob = new Blob([route.gpxContent], { type: 'application/gpx+xml' });
       const file = new File([blob], `${route.name}.gpx`, { type: 'application/gpx+xml' });
-      
-      // Intentar usar Web Share API si está disponible
+
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           title: route.name,
@@ -71,15 +70,7 @@ export const RouteList = ({ onSelectRoute, onClose }) => {
           files: [file]
         });
       } else {
-        // Fallback: descargar archivo
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${route.name}.gpx`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        downloadGPX(route.gpxContent, route.name);
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
